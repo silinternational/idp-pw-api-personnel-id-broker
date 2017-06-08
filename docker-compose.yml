@@ -1,0 +1,42 @@
+version: '2'
+services:
+    db:
+        image: silintl/mariadb:latest
+        ports:
+            - "3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: r00tp@ss!
+            MYSQL_HOST: db
+            MYSQL_DATABASE: app
+            MYSQL_USER: user
+            MYSQL_PASSWORD: pass
+
+    broker:
+        image: silintl/idp-id-broker:latest
+        ports:
+            - "8080:80"
+        depends_on:
+            - db
+        volumes:
+          - ./run-broker.sh:/data/run-broker.sh
+        working_dir: /data
+        environment:
+            IDP_NAME: idp1
+            MYSQL_HOST: db
+            MYSQL_DATABASE: app
+            MYSQL_USER: user
+            MYSQL_PASSWORD: pass
+            API_ACCESS_KEYS: abc123
+        
+        command: whenavail db 3306 60 ./run-broker.sh
+
+    test:
+        image: silintl/php7:latest
+        volumes:
+          - .:/data
+        depends_on:
+            - db
+            - broker
+        working_dir: /data
+        command: whenavail broker 80 60 ./run-tests.sh
+
