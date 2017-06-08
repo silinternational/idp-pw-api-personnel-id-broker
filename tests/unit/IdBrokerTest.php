@@ -1,19 +1,17 @@
 <?php
+require_once(__DIR__ . '/../../vendor/autoload.php');
 
-use \Sil\IdpPw\Common\Personnel\IdBroker\IdBroker;
+use PHPUnit\Framework\TestCase;
 
-use GuzzleHttp\Subscriber\Mock;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Client;
+use Sil\IdpPw\Common\Personnel\IdBroker\IdBroker;
+use Sil\Idp\IdBroker\Client\IdBrokerClient;
 
-use GuzzleHttp\Ring\Client\MockHandler;
-use GuzzleHttp\Ring\Future\CompletedFutureArray;
+use yii\base\NotSupportedException;
 
-class IdBrokerTest extends PHPUnit_Framework_TestCase
+class IdBrokerTest extends TestCase
 {
 
-    public $baseUrl = 'http://www.anywhere.org/peoplesearch/';
+    public $baseUrl = 'http://broker';
     public $accessToken = 'abc123';
 
     public $userData1 = [
@@ -76,42 +74,92 @@ class IdBrokerTest extends PHPUnit_Framework_TestCase
            ]
        ];
     }
-    
-    public function testFindByEmployeeId_OK()
+
+    public function testFindByEmployeeId_Mocked()
     {
         $mockReturnValue = $this->getMockReturnValue();
         $brokerMock = $this->getMockBuilder('\Sil\IdpPw\Common\Personnel\IdBroker\IdBroker')
-                           ->setMethods(array('callIdBrokerGetUser'))
+                           ->setMethods(['callIdBrokerGetUser'])
                            ->getMock();
         $brokerMock->expects($this->any())
                    ->method('callIdBrokerGetUser')
-                   ->will($this->returnValue($mockReturnValue));    
+                   ->willReturn($mockReturnValue);
 
         $brokerMock->baseUrl = "some.site.org";
         $brokerMock->accessToken = "abc123";
-                   
+
         $employeeId = '123456';
         $results = $brokerMock->findByEmployeeId($employeeId);
-        
+
         $expected = $mockReturnValue['username'];
         $msg = " *** Bad results for username";
-        $this->assertEquals($expected, $results->username, $msg); 
+        $this->assertEquals($expected, $results->username, $msg);
     }
-    
+
     public function testFindByUsername_Exception()
     {
-        $this->setExpectedException('\yii\base\NotSupportedException', null, 1496260356);
+        $this->expectException('\yii\base\NotSupportedException');
+        $this->expectExceptionCode(1496260356);
 
         $broker = new IdBroker();
         $broker->findByUsername('should-error');
     }
-    
+
     public function testFindByEmail_Exception()
     {
-        $this->setExpectedException('\yii\base\NotSupportedException', null, 1496260354);
+        $this->expectException('\yii\base\NotSupportedException');
+        $this->expectExceptionCode(1496260354);
 
         $broker = new IdBroker();
         $broker->findByEmail('should-error');
+    }
+    
+    public function testFindByEmployeeId()
+    {
+        $employeeId = '12333';
+        $firstName = 'Tommy';
+        $lastName = 'Tester';
+        $userName = 'tommy_tester';
+        $email = $userName . '@any.org';
+
+        // Setup
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
+
+        $newUserData = [
+            'employee_id' => $employeeId,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'username' => $userName,
+            'email' => $email,
+        ];
+
+        // In case the test is re-run and the database has not been refreshed
+        try {
+            $idBrokerClient->createUser($newUserData);
+        } catch (Exception $e) {
+            if ($e->getCode() != 1490802526) { // User already exists exception
+                throw $e;
+            }
+
+        }
+
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken
+        ]);
+
+        $expected = [
+            'employeeId' => $employeeId,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'username' => $userName,
+            'email' => $email,
+            'supervisorEmail' => null,
+            'spouseEmail' => null,
+        ];
+
+        $results = get_object_vars($idBroker->findByEmployeeId($employeeId));
+        $this->assertEquals($expected, $results);
     }
 
 }
