@@ -7,46 +7,13 @@ use Sil\IdpPw\Common\Personnel\IdBroker\IdBroker;
 use Sil\Idp\IdBroker\Client\IdBrokerClient;
 
 use yii\base\NotSupportedException;
+use GuzzleHttp\Command\Exception\CommandException;
 
 class IdBrokerTest extends TestCase
 {
 
     public $baseUrl = 'http://broker';
     public $accessToken = 'abc123';
-
-    public $userData1 = [
-        "uuid" => "abc123abc123",
-        "first_name" => "Test",
-        "last_name" => "User",
-        "display_name" => "Test User",
-        "email" => "test_user@domain.org",
-        "employee_id" => 123,
-        "username" => "TEST_USER",
-        "active" => "yes",
-        "locked" => "no",
-        "password" => [
-            "created_utc" => "2017-06-01T20:24:40+00:00",
-            "expiration_utc" => "2018-06-01T20:24:40+00:00",
-            "grace_period_ends_utc" => "2018-06-30T20:24:40+00:00",
-        ],
-    ];
-
-    public $userData2 = [
-        "uuid" => "adsfasdf-adsf-adf",
-        "first_name" => "Test",
-        "last_name" => "User2",
-        "display_name" => "Test User2",
-        "email" => "test_user2@domain.org",
-        "employee_id" => 124,
-        "username" => "TEST_USER2",
-        "active" => "yes",
-        "locked" => "no",
-        "password" => [
-            "created_utc" => "2017-06-01T20:24:40+00:00",
-            "expiration_utc" => "2018-06-01T20:24:40+00:00",
-            "grace_period_ends_utc" => "2018-06-30T20:24:40+00:00",
-        ],
-    ];
 
     public function getConfig() {
         return [
@@ -73,6 +40,24 @@ class IdBrokerTest extends TestCase
                "grace_period_ends_utc" => "2018-06-23 14:04:51"
            ]
        ];
+    }
+
+    public function testReturnPersonnelUserFromResponse_Mocked() {
+        $mockReturnValue = $this->getMockReturnValue();
+        unset($mockReturnValue['email']);
+        $brokerMock = $this->getMockBuilder('\Sil\IdpPw\Common\Personnel\IdBroker\IdBroker')
+            ->setMethods(['callIdBrokerGetUser'])
+            ->getMock();
+        $brokerMock->expects($this->any())
+            ->method('callIdBrokerGetUser')
+            ->willReturn($mockReturnValue);
+
+        $employeeId = '123456';
+        $this->expectExceptionCode(1496260921);
+        $this->expectExceptionMessage(
+            'Personnel attributes missing attribute: email for employeeId=' .
+            $employeeId);
+        $brokerMock->findByEmployeeId($employeeId);
     }
 
     public function testFindByEmployeeId_Mocked()
@@ -133,14 +118,36 @@ class IdBrokerTest extends TestCase
             'email' => $email,
         ];
 
-        // In case the test is re-run and the database has not been refreshed
-        try {
-            $idBrokerClient->createUser($newUserData);
-        } catch (Exception $e) {
-            if ($e->getCode() != 1490802526) { // User already exists exception
-                throw $e;
-            }
+        $i = 0;
+        $e = null;
 
+        $userExistsCode = 1490802526;
+
+        // Make sure broker container is available to deal with requests
+        while ($i < 60) {
+            $i++;
+
+            try {
+                $idBrokerClient->createUser($newUserData);
+                $e = null;
+                break;
+            } catch (Exception $e) {
+                // If broker not available, wait longer
+                if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
+                    sleep(1);
+
+                // if user already created, just continue
+                } else if ($e->getCode() == $userExistsCode) {
+                    $e = null;
+                    break;
+                } else {
+                    throw $e;
+                }
+            }
+        }
+
+        if ($e !== null) {
+            throw $e;
         }
 
         $idBroker = new IdBroker([
