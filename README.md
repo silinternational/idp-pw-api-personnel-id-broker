@@ -16,5 +16,5 @@ The public methods are ...
 ## Run the Unit Tests
 
 ```
-$ make test
+$ docker-compose run --rm test /data/run-tests.sh
 ```

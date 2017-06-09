@@ -10,12 +10,12 @@ use yii\base\NotSupportedException;
 
 class IdBroker extends Component implements PersonnelInterface
 {
- 
+
     /**
      * @var string
      */
     public $baseUrl;
- 
+
     /**
      * @var string
      */
@@ -38,7 +38,7 @@ class IdBroker extends Component implements PersonnelInterface
             }
         }
     }
-  
+
     /**
      * @param string $employeeId
      * @return PersonnelUser
@@ -50,8 +50,9 @@ class IdBroker extends Component implements PersonnelInterface
         return $this->returnPersonnelUserFromResponse('employeeId', $employeeId, $results);
     }
 
-    private function callIdBrokerGetUser($employeeId)
+    public function callIdBrokerGetUser($employeeId)
     {
+
         $idBrokerClient = new IdBrokerClient(
             $this->baseUrl, // The base URI for the API.
             $this->accessToken, // Your HTTP header authorization bearer token.
@@ -66,6 +67,8 @@ class IdBroker extends Component implements PersonnelInterface
         if ($results === null) {
             throw new NotFoundException();
         }
+
+        return $results;
     }
 
     public function returnPersonnelUserFromResponse($field, $value, $response): PersonnelUser
@@ -89,7 +92,7 @@ class IdBroker extends Component implements PersonnelInterface
             );
         }
     }
-  
+
     /**
      * @param string $username
      * @return PersonnelUser
@@ -102,14 +105,14 @@ class IdBroker extends Component implements PersonnelInterface
             1496260356
         );
     }
-  
+
     /**
      * @param string $email
      * @return PersonnelUser
      * @throws NotSupportedException
      */
     public function findByEmail($email): PersonnelUser
-    {            
+    {
         throw new NotSupportedException(
             'ID Broker personnel store only supports findByEmployeeId',
             1496260354
