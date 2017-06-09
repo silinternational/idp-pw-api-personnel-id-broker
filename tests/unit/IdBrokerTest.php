@@ -3,6 +3,7 @@ require_once(__DIR__ . '/../../vendor/autoload.php');
 
 use PHPUnit\Framework\TestCase;
 
+use Sil\IdpPw\Common\Personnel\NotFoundException;
 use Sil\IdpPw\Common\Personnel\IdBroker\IdBroker;
 use Sil\Idp\IdBroker\Client\IdBrokerClient;
 
@@ -98,7 +99,7 @@ class IdBrokerTest extends TestCase
         $broker = new IdBroker();
         $broker->findByEmail('should-error');
     }
-    
+
     public function testFindByEmployeeId()
     {
         $employeeId = '12333';
@@ -167,6 +168,31 @@ class IdBrokerTest extends TestCase
 
         $results = get_object_vars($idBroker->findByEmployeeId($employeeId));
         $this->assertEquals($expected, $results);
+    }
+
+
+    public function testFindByEmployeeId_MissingUser()
+    {
+         // Setup
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
+
+        $date = new DateTime();
+        $employeeId = $date->getTimestamp();
+        $newUserData = [
+            'employee_id' => $employeeId,
+            'first_name' => 'Manny',
+            'last_name' => 'Missing',
+            'username' => 'manny_missing',
+            'email' => 'manny_missing@any.org',
+        ];
+
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken
+        ]);
+
+        $this->expectException('Sil\IdpPw\Common\Personnel\NotFoundException');
+        $results = get_object_vars($idBroker->findByEmployeeId($employeeId));
     }
 
 }
