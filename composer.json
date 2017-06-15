@@ -1,5 +1,5 @@
 {
-    "name": "silinternational/idp-pw-api-personnel-idbroker",
+    "name": "silinternational/idp-pw-api-personnel-id-broker",
     "description": "IdP Password Management personnel component for ID Broker",
     "type": "library",
     "minimum-stability": "stable",
