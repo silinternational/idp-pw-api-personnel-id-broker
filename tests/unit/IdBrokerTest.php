@@ -82,22 +82,144 @@ class IdBrokerTest extends TestCase
         $this->assertEquals($expected, $results->username, $msg);
     }
 
-    public function testFindByUsername_Exception()
+    public function testFindByUsername()
     {
-        $this->expectException('\yii\base\NotSupportedException');
-        $this->expectExceptionCode(1496260356);
+        $employeeId = '12333';
+        $firstName = 'Tommy';
+        $lastName = 'Tester';
+        $userName = 'tommy_tester';
+        $email = $userName . '@any.org';
 
-        $broker = new IdBroker();
-        $broker->findByUsername('should-error');
+        // Setup
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
+
+        $newUserData = [
+            'employee_id' => $employeeId,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'username' => $userName,
+            'email' => $email,
+        ];
+
+        $i = 0;
+        $e = null;
+
+        $userExistsCode = 1490802526;
+
+        // Make sure broker container is available to deal with requests
+        while ($i < 60) {
+            $i++;
+
+            try {
+                $idBrokerClient->createUser($newUserData);
+                $e = null;
+                break;
+            } catch (Exception $e) {
+                // If broker not available, wait longer
+                if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
+                    sleep(1);
+
+                    // if user already created, just continue
+                } else if ($e->getCode() == $userExistsCode) {
+                    $e = null;
+                    break;
+                } else {
+                    throw $e;
+                }
+            }
+        }
+
+        if ($e !== null) {
+            throw $e;
+        }
+
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken
+        ]);
+
+        $expected = [
+            'employeeId' => $employeeId,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'username' => $userName,
+            'email' => $email,
+            'supervisorEmail' => null,
+            'spouseEmail' => null,
+        ];
+
+        $results = get_object_vars($idBroker->findByUsername($userName));
+        $this->assertEquals($expected, $results);
     }
 
-    public function testFindByEmail_Exception()
+    public function testFindByEmail()
     {
-        $this->expectException('\yii\base\NotSupportedException');
-        $this->expectExceptionCode(1496260354);
+        $employeeId = '12333';
+        $firstName = 'Tommy';
+        $lastName = 'Tester';
+        $userName = 'tommy_tester';
+        $email = $userName . '@any.org';
 
-        $broker = new IdBroker();
-        $broker->findByEmail('should-error');
+        // Setup
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
+
+        $newUserData = [
+            'employee_id' => $employeeId,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'username' => $userName,
+            'email' => $email,
+        ];
+
+        $i = 0;
+        $e = null;
+
+        $userExistsCode = 1490802526;
+
+        // Make sure broker container is available to deal with requests
+        while ($i < 60) {
+            $i++;
+
+            try {
+                $idBrokerClient->createUser($newUserData);
+                $e = null;
+                break;
+            } catch (Exception $e) {
+                // If broker not available, wait longer
+                if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
+                    sleep(1);
+
+                    // if user already created, just continue
+                } else if ($e->getCode() == $userExistsCode) {
+                    $e = null;
+                    break;
+                } else {
+                    throw $e;
+                }
+            }
+        }
+
+        if ($e !== null) {
+            throw $e;
+        }
+
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken
+        ]);
+
+        $expected = [
+            'employeeId' => $employeeId,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'username' => $userName,
+            'email' => $email,
+            'supervisorEmail' => null,
+            'spouseEmail' => null,
+        ];
+
+        $results = get_object_vars($idBroker->findByEmail($email));
+        $this->assertEquals($expected, $results);
     }
 
     public function testFindByEmployeeId()
