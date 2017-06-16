@@ -53,15 +53,7 @@ class IdBroker extends Component implements PersonnelInterface
     public function callIdBrokerGetUser($employeeId)
     {
 
-        $idBrokerClient = new IdBrokerClient(
-            $this->baseUrl, // The base URI for the API.
-            $this->accessToken, // Your HTTP header authorization bearer token.
-            [
-                'http_client_options' => [
-                    'timeout' => 10, // An (optional) custom HTTP timeout, in seconds.
-                ],
-            ]
-        );
+        $idBrokerClient = $this->getIdBrokerClient();
 
         $results = $idBrokerClient->getUser($employeeId);
         if ($results === null) {
@@ -100,15 +92,7 @@ class IdBroker extends Component implements PersonnelInterface
      */
     public function findByUsername($username): PersonnelUser
     {
-        $idBrokerClient = new IdBrokerClient(
-            $this->baseUrl, // The base URI for the API.
-            $this->accessToken, // Your HTTP header authorization bearer token.
-            [
-                'http_client_options' => [
-                    'timeout' => 10, // An (optional) custom HTTP timeout, in seconds.
-                ],
-            ]
-        );
+        $idBrokerClient = $this->getIdBrokerClient();
 
         $results = $idBrokerClient->listUsers(null, ['username' => $username]);
         if ( ! empty($results) && is_array($results[0])) {
@@ -125,7 +109,22 @@ class IdBroker extends Component implements PersonnelInterface
      */
     public function findByEmail($email): PersonnelUser
     {
-        $idBrokerClient = new IdBrokerClient(
+        $idBrokerClient = $this->getIdBrokerClient();
+
+        $results = $idBrokerClient->listUsers(null, ['email' => $email]);
+        if ( ! empty($results) && is_array($results[0])) {
+            return $this->returnPersonnelUserFromResponse('email', $email, $results[0]);
+        }
+
+        throw new NotFoundException();
+    }
+
+    /**
+     * @return IdBrokerClient
+     */
+    private function getIdBrokerClient()
+    {
+        return new IdBrokerClient(
             $this->baseUrl, // The base URI for the API.
             $this->accessToken, // Your HTTP header authorization bearer token.
             [
@@ -134,13 +133,6 @@ class IdBroker extends Component implements PersonnelInterface
                 ],
             ]
         );
-
-        $results = $idBrokerClient->listUsers(null, ['email' => $email]);
-        if ( ! empty($results) && is_array($results[0])) {
-            return $this->returnPersonnelUserFromResponse('email', $email, $results[0]);
-        }
-
-        throw new NotFoundException();
     }
 
 }
