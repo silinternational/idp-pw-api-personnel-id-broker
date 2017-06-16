@@ -89,14 +89,22 @@ class IdBroker extends Component implements PersonnelInterface
      * @param string $username
      * @return PersonnelUser
      * @throws NotFoundException
+     * @throws \Exception
      */
     public function findByUsername($username): PersonnelUser
     {
         $idBrokerClient = $this->getIdBrokerClient();
 
         $results = $idBrokerClient->listUsers(null, ['username' => $username]);
-        if ( ! empty($results) && is_array($results[0])) {
-            return $this->returnPersonnelUserFromResponse('username', $username, $results[0]);
+        if (count($results) > 1) {
+            throw new \Exception(
+                sprintf('More than one user found when searching by username "%s"', $username),
+                1497636205
+            );
+        } elseif (count($results) === 1) {
+            if ($results[0]['username'] == $username) {
+                return $this->returnPersonnelUserFromResponse('username', $username, $results[0]);
+            }
         }
 
         throw new NotFoundException();
@@ -106,14 +114,22 @@ class IdBroker extends Component implements PersonnelInterface
      * @param string $email
      * @return PersonnelUser
      * @throws NotFoundException
+     * @throws \Exception
      */
     public function findByEmail($email): PersonnelUser
     {
         $idBrokerClient = $this->getIdBrokerClient();
 
         $results = $idBrokerClient->listUsers(null, ['email' => $email]);
-        if ( ! empty($results) && is_array($results[0])) {
-            return $this->returnPersonnelUserFromResponse('email', $email, $results[0]);
+        if (count($results) > 1) {
+            throw new \Exception(
+                sprintf('More than one user found when searching by email "%s"', $email),
+                1497636210
+            );
+        } elseif (count($results) === 1) {
+            if ($results[0]['email'] == $email) {
+                return $this->returnPersonnelUserFromResponse('email', $email, $results[0]);
+            }
         }
 
         throw new NotFoundException();
