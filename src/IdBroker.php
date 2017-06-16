@@ -96,27 +96,51 @@ class IdBroker extends Component implements PersonnelInterface
     /**
      * @param string $username
      * @return PersonnelUser
-     * @throws NotSupportedException
+     * @throws NotFoundException
      */
     public function findByUsername($username): PersonnelUser
     {
-        throw new NotSupportedException(
-            'ID Broker personnel store only supports findByEmployeeId',
-            1496260356
+        $idBrokerClient = new IdBrokerClient(
+            $this->baseUrl, // The base URI for the API.
+            $this->accessToken, // Your HTTP header authorization bearer token.
+            [
+                'http_client_options' => [
+                    'timeout' => 10, // An (optional) custom HTTP timeout, in seconds.
+                ],
+            ]
         );
+
+        $results = $idBrokerClient->listUsers(null, ['username' => $username]);
+        if ( ! empty($results) && is_array($results[0])) {
+            return $this->returnPersonnelUserFromResponse('username', $username, $results[0]);
+        }
+
+        throw new NotFoundException();
     }
 
     /**
      * @param string $email
      * @return PersonnelUser
-     * @throws NotSupportedException
+     * @throws NotFoundException
      */
     public function findByEmail($email): PersonnelUser
     {
-        throw new NotSupportedException(
-            'ID Broker personnel store only supports findByEmployeeId',
-            1496260354
+        $idBrokerClient = new IdBrokerClient(
+            $this->baseUrl, // The base URI for the API.
+            $this->accessToken, // Your HTTP header authorization bearer token.
+            [
+                'http_client_options' => [
+                    'timeout' => 10, // An (optional) custom HTTP timeout, in seconds.
+                ],
+            ]
         );
+
+        $results = $idBrokerClient->listUsers(null, ['email' => $email]);
+        if ( ! empty($results) && is_array($results[0])) {
+            return $this->returnPersonnelUserFromResponse('email', $email, $results[0]);
+        }
+
+        throw new NotFoundException();
     }
 
 }

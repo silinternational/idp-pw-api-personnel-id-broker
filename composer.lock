@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3920011d067ab0a12f19770f79b53d8e",
+    "content-hash": "f851ff5551a6abeccfdb3608121ac873",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -629,16 +629,16 @@
         },
         {
             "name": "silinternational/idp-id-broker-php-client",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silinternational/idp-id-broker-php-client.git",
-                "reference": "b73f20df124e7c9bd1dbdd99cde757e65a9239f3"
+                "reference": "e64469f89c82fe8a578c360373b3ecf43a5276bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silinternational/idp-id-broker-php-client/zipball/b73f20df124e7c9bd1dbdd99cde757e65a9239f3",
-                "reference": "b73f20df124e7c9bd1dbdd99cde757e65a9239f3",
+                "url": "https://api.github.com/repos/silinternational/idp-id-broker-php-client/zipball/e64469f89c82fe8a578c360373b3ecf43a5276bc",
+                "reference": "e64469f89c82fe8a578c360373b3ecf43a5276bc",
                 "shasum": ""
             },
             "require": {
@@ -679,7 +679,7 @@
                 "idp",
                 "php client"
             ],
-            "time": "2017-05-15T16:07:28+00:00"
+            "time": "2017-06-16T14:35:39+00:00"
         },
         {
             "name": "silinternational/idp-pw-api-common",
