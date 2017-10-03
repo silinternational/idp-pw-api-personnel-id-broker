@@ -1,12 +1,12 @@
 <?php
 namespace Sil\IdpPw\Common\Personnel\IdBroker;
 
+use IPBlock;
 use Sil\Idp\IdBroker\Client\IdBrokerClient;
 use Sil\IdpPw\Common\Personnel\NotFoundException;
 use Sil\IdpPw\Common\Personnel\PersonnelInterface;
 use Sil\IdpPw\Common\Personnel\PersonnelUser;
 use yii\base\Component;
-use yii\base\NotSupportedException;
 
 class IdBroker extends Component implements PersonnelInterface
 {
@@ -20,6 +20,16 @@ class IdBroker extends Component implements PersonnelInterface
      * @var string
      */
     public $accessToken;
+
+    /**
+     * @var boolean
+     */
+    public $assertValidBrokerIp = true;
+
+    /**
+     * @var IPBlock[]
+     */
+    public $trustedIpRanges = [];
 
     /**
      * @param $userData
@@ -144,6 +154,8 @@ class IdBroker extends Component implements PersonnelInterface
             $this->baseUrl, // The base URI for the API.
             $this->accessToken, // Your HTTP header authorization bearer token.
             [
+                IdBrokerClient::TRUSTED_IPS_CONFIG => $this->trustedIpRanges,
+                IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => $this->assertValidBrokerIp,
                 'http_client_options' => [
                     'timeout' => 10, // An (optional) custom HTTP timeout, in seconds.
                 ],

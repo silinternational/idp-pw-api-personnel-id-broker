@@ -34,9 +34,9 @@ services:
         image: silintl/php7:latest
         volumes:
           - .:/data
-        depends_on:
-            - db
-            - broker
+#        depends_on:
+#            - db
+#            - broker
         working_dir: /data
         command: whenavail broker 80 60 ./run-tests.sh
 
