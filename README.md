@@ -13,6 +13,31 @@ The public methods are ...
   * findByUsername($username) // Not supported by ID Broker so just throws exception, but is required by interface
   * findByEmail($email) // Not supported by ID Broker so just throws exception, but is required by interface
 
+## Configuration
+This code is loaded in as a Yii2 Component in the main config file. Here is an example:
+
+```php
+'components' => [
+    'personnel' => [
+        'class' => 'Sil\IdpPw\Common\Personnel\IdBroker\IdBroker',
+        'baseUrl' => Env::requireEnv('ID_BROKER_BASE_URI'),
+        'accessToken' => Env::requireEnv('ID_BROKER_ACCESS_TOKEN'),
+        'assertValidBrokerIp' => true,
+        'trustedIpRanges' => ['10.0.01/16','127.0.0.1/32'],
+    ],
+]
+```
+
+A more concise example:
+
+```php
+'components' => [
+    'personnel' => ArrayHelper::merge(
+        ['class' => 'Sil\IdpPw\Common\Personnel\IdBroker\IdBroker'],
+        Env::getArrayFromPrefix('ID_BROKER_')
+    ),
+]
+
 ## Run the Unit Tests
 
 ```
