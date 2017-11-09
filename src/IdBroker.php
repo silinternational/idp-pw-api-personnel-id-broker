@@ -29,7 +29,7 @@ class IdBroker extends Component implements PersonnelInterface
     /**
      * @var IPBlock[]
      */
-    public $trustedIpRanges = [];
+    public $validIpRanges = [];
 
     /**
      * @param $userData
@@ -154,7 +154,7 @@ class IdBroker extends Component implements PersonnelInterface
             $this->baseUrl, // The base URI for the API.
             $this->accessToken, // Your HTTP header authorization bearer token.
             [
-                IdBrokerClient::TRUSTED_IPS_CONFIG => $this->trustedIpRanges,
+                IdBrokerClient::TRUSTED_IPS_CONFIG => $this->validIpRanges,
                 IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => $this->assertValidBrokerIp,
                 'http_client_options' => [
                     'timeout' => 10, // An (optional) custom HTTP timeout, in seconds.
