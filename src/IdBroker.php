@@ -112,7 +112,7 @@ class IdBroker extends Component implements PersonnelInterface
                 1497636205
             );
         } elseif (count($results) === 1) {
-            if ($results[0]['username'] == $username) {
+            if (mb_strtolower($results[0]['username']) == mb_strtolower($username)) {
                 return $this->returnPersonnelUserFromResponse('username', $username, $results[0]);
             }
         }
@@ -137,7 +137,7 @@ class IdBroker extends Component implements PersonnelInterface
                 1497636210
             );
         } elseif (count($results) === 1) {
-            if ($results[0]['email'] == $email) {
+            if (mb_strtolower($results[0]['email']) == mb_strtolower($email)) {
                 return $this->returnPersonnelUserFromResponse('email', $email, $results[0]);
             }
         }
