@@ -37,6 +37,7 @@ A more concise example:
         Env::getArrayFromPrefix('ID_BROKER_')
     ),
 ]
+```
 
 ## Run the Unit Tests
 
