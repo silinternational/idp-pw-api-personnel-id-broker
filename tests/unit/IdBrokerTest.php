@@ -305,26 +305,15 @@ class IdBrokerTest extends TestCase
     public function testFindByEmployeeId_MissingUser()
     {
          // Setup
-        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
-
-        $date = new DateTime();
-        $employeeId = $date->getTimestamp();
-        $newUserData = [
-            'employee_id' => $employeeId,
-            'first_name' => 'Manny',
-            'last_name' => 'Missing',
-            'username' => 'manny_missing',
-            'email' => 'manny_missing@any.org',
-        ];
-
+        $employeeId = time();
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
             'accessToken' => $this->accessToken,
             'assertValidBrokerIp' => false,
         ]);
 
-        $this->expectException('Sil\IdpPw\Common\Personnel\NotFoundException');
-        $results = get_object_vars($idBroker->findByEmployeeId($employeeId));
+        $this->expectException(NotFoundException::class);
+        $idBroker->findByEmployeeId($employeeId);
     }
 
 }
