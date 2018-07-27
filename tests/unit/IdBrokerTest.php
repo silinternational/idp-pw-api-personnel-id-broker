@@ -7,9 +7,6 @@ use Sil\IdpPw\Common\Personnel\NotFoundException;
 use Sil\IdpPw\Common\Personnel\IdBroker\IdBroker;
 use Sil\Idp\IdBroker\Client\IdBrokerClient;
 
-use yii\base\NotSupportedException;
-use GuzzleHttp\Command\Exception\CommandException;
-
 class IdBrokerTest extends TestCase
 {
 
