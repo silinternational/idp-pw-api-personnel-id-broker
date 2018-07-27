@@ -22,6 +22,45 @@ class IdBrokerTest extends TestCase
             'accessToken' => $this->accessToken,
         ];
     }
+    
+    protected function ensureUserExists($userInfo)
+    {
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken, [
+            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => false,
+        ]);
+        
+        $i = 0;
+        $e = null;
+        
+        $userExistsCode = 1490802526;
+        
+        // Make sure broker container is available to deal with requests
+        while ($i < 60) {
+            $i++;
+        
+            try {
+                $idBrokerClient->createUser($userInfo);
+                $e = null;
+                break;
+            } catch (Exception $e) {
+                // If broker not available, wait longer
+                if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
+                    sleep(1);
+                
+                    // if user already created, just continue
+                } else if ($e->getCode() == $userExistsCode) {
+                    $e = null;
+                    break;
+                } else {
+                    throw $e;
+                }
+            }
+        }
+        
+        if ($e !== null) {
+            throw $e;
+        }
+    }
 
     private function getMockReturnValue()
     {
@@ -91,49 +130,13 @@ class IdBrokerTest extends TestCase
         $email = $userName . '@any.org';
 
         // Setup
-        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken, [
-            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => false,
-        ]);
-
-        $newUserData = [
+        $this->ensureUserExists([
             'employee_id' => $employeeId,
             'first_name' => $firstName,
             'last_name' => $lastName,
             'username' => $userName,
             'email' => $email,
-        ];
-
-        $i = 0;
-        $e = null;
-
-        $userExistsCode = 1490802526;
-
-        // Make sure broker container is available to deal with requests
-        while ($i < 60) {
-            $i++;
-
-            try {
-                $idBrokerClient->createUser($newUserData);
-                $e = null;
-                break;
-            } catch (Exception $e) {
-                // If broker not available, wait longer
-                if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
-                    sleep(1);
-
-                    // if user already created, just continue
-                } else if ($e->getCode() == $userExistsCode) {
-                    $e = null;
-                    break;
-                } else {
-                    throw $e;
-                }
-            }
-        }
-
-        if ($e !== null) {
-            throw $e;
-        }
+        ]);
 
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
@@ -164,49 +167,13 @@ class IdBrokerTest extends TestCase
         $email = $userName . '@any.org';
 
         // Setup
-        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken, [
-            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => false,
-        ]);
-        
-        $newUserData = [
+        $this->ensureUserExists([
             'employee_id' => $employeeId,
             'first_name' => $firstName,
             'last_name' => $lastName,
             'username' => $userName,
             'email' => $email,
-        ];
-
-        $i = 0;
-        $e = null;
-
-        $userExistsCode = 1490802526;
-
-        // Make sure broker container is available to deal with requests
-        while ($i < 60) {
-            $i++;
-
-            try {
-                $idBrokerClient->createUser($newUserData);
-                $e = null;
-                break;
-            } catch (Exception $e) {
-                // If broker not available, wait longer
-                if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
-                    sleep(1);
-
-                    // if user already created, just continue
-                } else if ($e->getCode() == $userExistsCode) {
-                    $e = null;
-                    break;
-                } else {
-                    throw $e;
-                }
-            }
-        }
-
-        if ($e !== null) {
-            throw $e;
-        }
+        ]);
 
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
@@ -237,49 +204,13 @@ class IdBrokerTest extends TestCase
         $email = $userName . '@any.org';
 
         // Setup
-        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken, [
-            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => false,
-        ]);
-
-        $newUserData = [
+        $this->ensureUserExists([
             'employee_id' => $employeeId,
             'first_name' => $firstName,
             'last_name' => $lastName,
             'username' => $userName,
             'email' => $email,
-        ];
-
-        $i = 0;
-        $e = null;
-
-        $userExistsCode = 1490802526;
-
-        // Make sure broker container is available to deal with requests
-        while ($i < 60) {
-            $i++;
-
-            try {
-                $idBrokerClient->createUser($newUserData);
-                $e = null;
-                break;
-            } catch (Exception $e) {
-                // If broker not available, wait longer
-                if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
-                    sleep(1);
-
-                // if user already created, just continue
-                } else if ($e->getCode() == $userExistsCode) {
-                    $e = null;
-                    break;
-                } else {
-                    throw $e;
-                }
-            }
-        }
-
-        if ($e !== null) {
-            throw $e;
-        }
+        ]);
 
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
@@ -304,7 +235,7 @@ class IdBrokerTest extends TestCase
 
     public function testFindByEmployeeId_MissingUser()
     {
-         // Setup
+        // Setup
         $employeeId = time();
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
