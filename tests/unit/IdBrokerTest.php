@@ -91,7 +91,9 @@ class IdBrokerTest extends TestCase
         $email = $userName . '@any.org';
 
         // Setup
-        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken, [
+            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => false,
+        ]);
 
         $newUserData = [
             'employee_id' => $employeeId,
@@ -135,7 +137,8 @@ class IdBrokerTest extends TestCase
 
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
-            'accessToken' => $this->accessToken
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
         ]);
 
         $expected = [
@@ -161,8 +164,10 @@ class IdBrokerTest extends TestCase
         $email = $userName . '@any.org';
 
         // Setup
-        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
-
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken, [
+            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => false,
+        ]);
+        
         $newUserData = [
             'employee_id' => $employeeId,
             'first_name' => $firstName,
@@ -205,7 +210,8 @@ class IdBrokerTest extends TestCase
 
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
-            'accessToken' => $this->accessToken
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
         ]);
 
         $expected = [
@@ -231,7 +237,9 @@ class IdBrokerTest extends TestCase
         $email = $userName . '@any.org';
 
         // Setup
-        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken);
+        $idBrokerClient = new IdBrokerClient($this->baseUrl, $this->accessToken, [
+            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => false,
+        ]);
 
         $newUserData = [
             'employee_id' => $employeeId,
@@ -275,7 +283,8 @@ class IdBrokerTest extends TestCase
 
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
-            'accessToken' => $this->accessToken
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
         ]);
 
         $expected = [
@@ -310,7 +319,8 @@ class IdBrokerTest extends TestCase
 
         $idBroker = new IdBroker([
             'baseUrl' => $this->baseUrl,
-            'accessToken' => $this->accessToken
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
         ]);
 
         $this->expectException('Sil\IdpPw\Common\Personnel\NotFoundException');
