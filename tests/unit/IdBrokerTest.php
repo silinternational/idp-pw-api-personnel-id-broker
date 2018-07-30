@@ -301,4 +301,57 @@ class IdBrokerTest extends TestCase
         );
     }
 
+    public function testReturnPersonnelUserFromResponse_HasManagerEmail()
+    {
+        // Arrange:
+        $employeeId = '88888';
+        $userName = 'tommy_tester8';
+        $managerEmail = 'manager@example.com';
+        $this->ensureUserExists([
+            'employee_id' => $employeeId,
+            'first_name' => 'Tommy',
+            'last_name' => 'Tester',
+            'username' => $userName,
+            'email' => $userName . '@example.com',
+            'manager_email' => $managerEmail,
+        ]);
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
+        ]);
+        
+        // Act:
+        $personnelUser = $idBroker->findByEmployeeId($employeeId);
+        
+        // Assert:
+        $this->assertEquals($managerEmail, $personnelUser->supervisorEmail);
+    }
+    
+    public function testReturnPersonnelUserFromResponse_HasSpouseEmail()
+    {
+        // Arrange:
+        $employeeId = '99999';
+        $userName = 'tommy_tester9';
+        $spouseEmail = 'spouse@example.com';
+        $this->ensureUserExists([
+            'employee_id' => $employeeId,
+            'first_name' => 'Tommy',
+            'last_name' => 'Tester',
+            'username' => $userName,
+            'email' => $userName . '@example.com',
+            'spouse_email' => $spouseEmail,
+        ]);
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
+        ]);
+    
+        // Act:
+        $personnelUser = $idBroker->findByEmployeeId($employeeId);
+    
+        // Assert:
+        $this->assertEquals($spouseEmail, $personnelUser->spouseEmail);
+    }
 }

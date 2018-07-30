@@ -116,8 +116,8 @@ class IdBroker extends Component implements PersonnelInterface
             $pUser->email = $response['email'];
             $pUser->employeeId = $response['employee_id'];
             $pUser->username = $response['username'];
-            $pUser->supervisorEmail = null;
-            $pUser->spouseEmail = null;
+            $pUser->supervisorEmail = $response['manager_email'] ?? null;
+            $pUser->spouseEmail = $response['spouse_email'] ?? null;
 
             return $pUser;
         } catch (\Exception $e) {
