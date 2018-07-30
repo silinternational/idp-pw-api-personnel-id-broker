@@ -63,7 +63,7 @@ class IdBrokerTest extends TestCase
     {
        return [
            "uuid" => "11111111-aaaa-1111-aaaa-111111111111",
-           "employee_id" => "12345",
+           "employee_id" => "11111",
            "first_name" => "John",
            "last_name" => "Smith",
            "display_name" => "John Smith",
@@ -89,7 +89,7 @@ class IdBrokerTest extends TestCase
             ->method('callIdBrokerGetUser')
             ->willReturn($mockReturnValue);
 
-        $employeeId = '123456';
+        $employeeId = '11111';
         $this->expectExceptionCode(1496260921);
         $this->expectExceptionMessage(
             'Personnel attributes missing attribute: email for employeeId=' .
@@ -110,7 +110,7 @@ class IdBrokerTest extends TestCase
         $brokerMock->baseUrl = "some.site.org";
         $brokerMock->accessToken = "abc123";
 
-        $employeeId = '123456';
+        $employeeId = '11111';
         $results = $brokerMock->findByEmployeeId($employeeId);
 
         $expected = $mockReturnValue['username'];
@@ -120,10 +120,10 @@ class IdBrokerTest extends TestCase
 
     public function testFindByUsername()
     {
-        $employeeId = '12333';
+        $employeeId = '33333';
         $firstName = 'Tommy';
         $lastName = 'Tester';
-        $userName = 'tommy_tester';
+        $userName = 'tommy_tester3';
         $email = $userName . '@any.org';
 
         // Setup
@@ -157,10 +157,10 @@ class IdBrokerTest extends TestCase
 
     public function testFindByEmail()
     {
-        $employeeId = '12333';
+        $employeeId = '44444';
         $firstName = 'Tommy';
         $lastName = 'Tester';
-        $userName = 'tommy_tester';
+        $userName = 'tommy_tester4';
         $email = $userName . '@any.org';
 
         // Setup
@@ -194,10 +194,10 @@ class IdBrokerTest extends TestCase
 
     public function testFindByEmployeeId()
     {
-        $employeeId = '12333';
+        $employeeId = '55555';
         $firstName = 'Tommy';
         $lastName = 'Tester';
-        $userName = 'tommy_tester';
+        $userName = 'tommy_tester5';
         $email = $userName . '@any.org';
 
         // Setup
