@@ -44,8 +44,9 @@ class IdBrokerTest extends TestCase
                 if ($e instanceof GuzzleHttp\Command\Exception\CommandException) {
                     sleep(1);
                 
-                    // if user already created, just continue
+                    // if user already created, ensure it matches
                 } else if ($e->getCode() == $userExistsCode) {
+                    $idBrokerClient->updateUser($userInfo);
                     $e = null;
                     break;
                 } else {
