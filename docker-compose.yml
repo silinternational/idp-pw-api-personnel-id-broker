@@ -47,5 +47,5 @@ services:
             - db
             - broker
         working_dir: /data
-        command: whenavail broker 80 60 ./run-tests.sh
+        command: whenavail db 3306 60 ./run-tests.sh
 
