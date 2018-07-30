@@ -244,5 +244,61 @@ class IdBrokerTest extends TestCase
         $this->expectException(NotFoundException::class);
         $idBroker->findByEmployeeId($employeeId);
     }
+    
+    /**
+     * Ensure that users who are not flagged as active are not returned, and
+     * thus look like they are simply missing.
+     *
+     * @throws NotFoundException
+     */
+    public function testReturnPersonnelUserFromResponse_NotActiveEqualsMissing()
+    {
+        // Arrange:
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
+        ]);
+        $employeeId = '66666';
+        $fakeIdBrokerClientResponse = $this->getMockReturnValue();
+        $fakeIdBrokerClientResponse['active'] = 'no';
+        
+        // Pre-assert:
+        $this->expectException(NotFoundException::class);
+        
+        // Act:
+        $idBroker->returnPersonnelUserFromResponse(
+            'employee_id',
+            $employeeId,
+            $fakeIdBrokerClientResponse
+        );
+    }
+    
+    /**
+     * Ensure that receiving user info back that lacks an `active` value causes
+     * an exception.
+     */
+    public function testReturnPersonnelUserFromResponse_ActiveUnknown()
+    {
+        // Arrange:
+        $idBroker = new IdBroker([
+            'baseUrl' => $this->baseUrl,
+            'accessToken' => $this->accessToken,
+            'assertValidBrokerIp' => false,
+        ]);
+        $employeeId = '77777';
+        $fakeIdBrokerClientResponse = $this->getMockReturnValue();
+        unset($fakeIdBrokerClientResponse['active']);
+        
+        // Pre-assert:
+        $this->expectException(\Exception::class);
+        
+        // Act:
+        $idBroker->returnPersonnelUserFromResponse(
+            'employee_id',
+            $employeeId,
+            $fakeIdBrokerClientResponse
+        );
+    }
 
 }
