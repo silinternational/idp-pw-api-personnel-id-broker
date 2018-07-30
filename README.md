@@ -42,5 +42,5 @@ A more concise example:
 ## Run the Unit Tests
 
 ```
-$ docker-compose run --rm test /data/run-tests.sh
+$ docker-compose run --rm test
 ```
