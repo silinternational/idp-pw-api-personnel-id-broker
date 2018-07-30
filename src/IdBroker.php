@@ -60,6 +60,13 @@ class IdBroker extends Component implements PersonnelInterface
         return $this->returnPersonnelUserFromResponse('employeeId', $employeeId, $results);
     }
 
+    /**
+     * Get the user attributes for the user with the given Employee ID.
+     *
+     * @param $employeeId string
+     * @return array|null
+     * @throws NotFoundException
+     */
     public function callIdBrokerGetUser($employeeId)
     {
 
