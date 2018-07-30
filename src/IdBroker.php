@@ -60,6 +60,13 @@ class IdBroker extends Component implements PersonnelInterface
         return $this->returnPersonnelUserFromResponse('employeeId', $employeeId, $results);
     }
 
+    /**
+     * Get the user attributes for the user with the given Employee ID.
+     *
+     * @param $employeeId string
+     * @return array|null
+     * @throws NotFoundException
+     */
     public function callIdBrokerGetUser($employeeId)
     {
 
@@ -73,8 +80,34 @@ class IdBroker extends Component implements PersonnelInterface
         return $results;
     }
 
+    /**
+     * Take the given response that came from the IdBrokerClient and return a
+     * PersonnelUser representing the response's data.
+     *
+     * NOTE: Inactive users will be treated as not found.
+     *
+     * @param $field string The field searched. EXAMPLE: 'employee_id'
+     * @param $value string The value searched for. EXAMPLE: '12345'
+     * @param $response array|null The response returned by the IdBrokerClient.
+     * @return PersonnelUser
+     * @throws NotFoundException
+     * @throws \Exception
+     */
     public function returnPersonnelUserFromResponse($field, $value, $response): PersonnelUser
     {
+        $active = $response['active'] ?? null;
+        if ($active === null) {
+            throw new \Exception(
+                sprintf(
+                    'No "active" value returned for user: %s',
+                    var_export($response, true)
+                ),
+                1532961386
+            );
+        } elseif (strtolower($active) !== 'yes') {
+            throw new NotFoundException();
+        }
+        
         try {
             $this->assertRequiredAttributesPresent($response);
             $pUser = new PersonnelUser();
@@ -83,8 +116,8 @@ class IdBroker extends Component implements PersonnelInterface
             $pUser->email = $response['email'];
             $pUser->employeeId = $response['employee_id'];
             $pUser->username = $response['username'];
-            $pUser->supervisorEmail = null;
-            $pUser->spouseEmail = null;
+            $pUser->supervisorEmail = $response['manager_email'] ?? null;
+            $pUser->spouseEmail = $response['spouse_email'] ?? null;
 
             return $pUser;
         } catch (\Exception $e) {

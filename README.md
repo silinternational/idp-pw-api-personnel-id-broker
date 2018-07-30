@@ -9,9 +9,9 @@ which it then returns.
 
 The public methods are ...
 
-  * findByEmployeeId($employeeId)
-  * findByUsername($username) // Not supported by ID Broker so just throws exception, but is required by interface
-  * findByEmail($email) // Not supported by ID Broker so just throws exception, but is required by interface
+  * findByEmployeeId($employeeId) // Preferred method
+  * findByUsername($username)
+  * findByEmail($email)
 
 ## Configuration
 This code is loaded in as a Yii2 Component in the main config file. Here is an example:
@@ -37,9 +37,10 @@ A more concise example:
         Env::getArrayFromPrefix('ID_BROKER_')
     ),
 ]
+```
 
 ## Run the Unit Tests
 
 ```
-$ docker-compose run --rm test /data/run-tests.sh
+$ docker-compose run --rm test
 ```
